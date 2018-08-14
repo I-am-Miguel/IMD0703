@@ -12,8 +12,8 @@ def deslocar_letra(letra, posicao):
 
 if __name__ == '__main__':
 
-    arquivo_cifrado = open('./mensagem_cifrada.txt', 'r')
-    arquivo_decifrado = open('./mensagem_decifrada.txt', 'w')
+    arquivo_cifrado = open('./arquivos/mensagem_cifrada.txt', 'r')
+    arquivo_decifrado = open('./arquivos/mensagem_decifrada.txt', 'w')
 
     texto_cifrado = arquivo_cifrado.read()
     texto_decifrado = ''
@@ -33,5 +33,7 @@ if __name__ == '__main__':
 
         texto_decifrado = ''
 
-    arquivo_cifrado.close()
     arquivo_decifrado.write(msg_deslocamento + texto_decifrado)
+
+    arquivo_cifrado.close()
+    arquivo_decifrado.close()
