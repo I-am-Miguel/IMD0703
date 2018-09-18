@@ -1,28 +1,32 @@
+import ast
 import hashlib
 import os
 import sys
-import yaml
 
 dir_base = ".report/"
 report_base = "report.json"
 diff_base = "diff.json"
-
-report_file = dir_base + report_base
-
-
-def create_dir(dir_base=dir_base):
-    if not os.path.isdir(os.path.abspath(dir_base)):
-        os.mkdir(os.path.abspath(dir_base))
+dir_track = '.'
 
 
-def delete_dir(dir_base=dir_base):
-    if os.path.isdir(os.path.abspath(dir_base)):
+def create_dir(dir_local='./'):
+    global dir_base
+    dir_local += dir_base
+    if not os.path.isdir(os.path.abspath(dir_local)):
+        os.mkdir(os.path.abspath(dir_local))
+    dir_base = dir_local
 
-        for raiz, diretorios, arquivos in os.walk(os.path.abspath(dir_base)):
+
+def delete_dir(dir_local='./'):
+    global dir_base
+    dir_local += dir_base
+    if os.path.isdir(os.path.abspath(dir_local)):
+
+        for raiz, diretorios, arquivos in os.walk(os.path.abspath(dir_local)):
             for arquivo in arquivos:
                 os.remove(os.path.join(raiz, arquivo))
 
-        os.removedirs(os.path.abspath(dir_base))
+        os.removedirs(os.path.abspath(dir_local))
 
 
 def filehash(filepath, blocksize=4096):
@@ -38,17 +42,24 @@ def filehash(filepath, blocksize=4096):
 
 
 def save_report(dict_file):
-    global report_file
-    archive = report_file
-
+    global dir_track
+    global dir_base
+    archive = dir_base + report_base
+    dict_file = dir_track + '\n' + str(dict_file)
     with open(os.path.abspath(archive), 'w') as report:
-        report.write(str(dict_file))
+        report.write(dict_file)
     report.close()
 
 
-def load_report(archive=report_file):
+def load_report(path_name):
+    global dir_track
+    global dir_base
+    archive = path_name + dir_base + report_base
     report = open(os.path.abspath(archive))
-    dict_file = yaml.load(str(report.read()))
+    rows = report.read().split('\n')
+
+    dir_track = str(rows[0])
+    dict_file = ast.literal_eval(str(rows[1]))
 
     return dict_file
 
@@ -70,13 +81,13 @@ def dict_report(path_name):
 
 def dict_diff(path_name, output_file):
     dict_file = scanner_dir(path_name)
-    report = load_report()
+    report = load_report(pasta)
 
     return calculate_dict_diff(report, dict_file, output_file)
 
 
 def calculate_dict_diff(dict_base, dict_file, output_file=None):
-    data = {}
+    data = dict()
     data['created'] = list(set(dict_file) - set(dict_base))
     data['deleted'] = list(set(dict_base) - set(dict_file))
     data['updated'] = []
@@ -98,7 +109,6 @@ def calculate_dict_diff(dict_base, dict_file, output_file=None):
 
 
 if __name__ == '__main__':
-    create_dir()
 
     metodo = sys.argv[1]
     opcao = sys.argv[2]
@@ -111,6 +121,7 @@ if __name__ == '__main__':
         pass
 
     if metodo == "-hash" and opcao == '-i':
+        create_dir(pasta)
         dict_report(pasta)
 
     elif metodo == "-hash" and opcao == '-t':
