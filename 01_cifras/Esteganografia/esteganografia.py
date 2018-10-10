@@ -1,9 +1,20 @@
 import sys
 from PIL import Image
 
+numero_magico = "11111111"
+
+def get_rgb(byte):
+    return byte[-1]
+
 
 def int_to_bin(numero):
     return bin(numero)[2:].zfill(8)
+
+def bin_to_int(bin):
+    return int(bin,2)
+
+def int_to_char(bin):
+    return chr(bin)
 
 
 def modify_color(color, bit):
@@ -70,6 +81,56 @@ def hide_text(message, path_image):
     image.save("mario_copy.bmp")
 
 
+def ler_mensagem(path_image):
+    image = Image.open(path_image)
+    pixels = image.load()
+
+    size = image.size
+    width = size[0]
+    height = size[1]
+
+    byte = ""
+    mensage = ""
+
+    for x in range(width):
+        for y in range(height):
+            pixel = pixels[x, y]
+
+            red = pixel[0]
+            green = pixel[1]
+            blue = pixel[2]
+
+            byte += get_rgb(int_to_bin(red))
+            if len(byte) >= 8:
+                if byte == numero_magico:
+                    break
+                mensage += int_to_char(bin_to_int(byte))
+                byte = ""
+
+            byte += get_rgb(int_to_bin(green))
+            if len(byte) >= 8:
+                if byte == numero_magico:
+                    break
+                mensage += int_to_char(bin_to_int(byte))
+                byte = ""
+
+            byte += get_rgb(int_to_bin(blue))
+            if len(byte) >= 8:
+                if byte == numero_magico:
+                    break
+                mensage += int_to_char(bin_to_int(byte))
+                byte = ""
+
+        else:
+            continue
+    return mensage
+
+
+
 if __name__ == "__main__":
-    message = sys.argv[1]
-    hide_text(message, "mario.bmp")
+    metodo = sys.argv[1]
+    if(metodo == 'cifra'):
+        message = sys.argv[2]
+        hide_text(message, "mario.bmp")
+    else:
+        print(ler_mensagem("mario_copy.bmp"))

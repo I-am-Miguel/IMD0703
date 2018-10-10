@@ -1,7 +1,8 @@
+
 def decifra_vigenere(mensagem_cifrada, key):
     mensagem_cifrada_original = mensagem_cifrada
 
-    mensagem_cifrada = removerAcentosECaracteresEspeciais(mensagem_cifrada, "áéíóúÁÉÍÓÚâêîôÂÊÎÔãõÃÕçÇ:")
+    #mensagem_cifrada = removerAcentosECaracteresEspeciais(mensagem_cifrada, "áéíóúÁÉÍÓÚâêîôÂÊÎÔãõÃÕçÇ:")
 
     key = key * len(mensagem_cifrada)
     mensagem_decifrada = ""
